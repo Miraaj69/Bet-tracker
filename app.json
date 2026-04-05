@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "BetTracker Pro Expo",
-    "slug": "bettracker-pro-expo",
+    "slug": "bet-tracker",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -13,22 +13,19 @@
       "backgroundColor": "#000000"
     },
     "ios": {
-      "supportsTablet": true,
-      "bundleIdentifier": "com.bettrackerpro.expo"
+      "supportsTablet": true
     },
     "android": {
-      "package": "com.bettrackerpro.expo",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#000000"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.bettrackerpro.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "sdkVersion": "54.0.0",
-    "platforms": ["ios", "android", "web"],
     "extra": {
       "eas": {
         "projectId": "99cbdd7e-08ae-4e24-8848-95173dc787c7"
