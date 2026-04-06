@@ -6,16 +6,10 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        with:
-          ref: main
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install React + ReactDOM + Babel locally
         run: |
@@ -47,15 +41,15 @@ jobs:
           )
           html = re.sub(r'<script defer src="https://static\.cloudflareinsights\.com/.*?</script>', '', html, flags=re.DOTALL)
 
-          open('assets/index.html', 'w', encoding='utf-8').write(html)
+          import os
+          os.makedirs('output', exist_ok=True)
+          open('output/index.html', 'w', encoding='utf-8').write(html)
           print(f"Final size: {len(html)//1024}KB - Done!")
           PYEOF
 
-      - name: Commit and force push
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add assets/index.html
-          git diff --staged --quiet && echo "No changes" && exit 0
-          git commit -m "build: inline React+Babel for offline WebView [skip ci]"
-          git push --force-with-lease origin main
+      - name: Upload as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: inlined-index-html
+          path: output/index.html
+          retention-days: 7
