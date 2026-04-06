@@ -1,8 +1,6 @@
 name: Inline React Scripts into HTML
 
 on:
-  push:
-    branches: [main, master]
   workflow_dispatch:
 
 jobs:
@@ -15,12 +13,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
+          ref: main
           fetch-depth: 0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install React + ReactDOM + Babel locally
         run: |
@@ -31,16 +26,12 @@ jobs:
           python3 << 'PYEOF'
           import re
 
-          print("Reading HTML...")
           html = open('assets/index.html', 'r', encoding='utf-8').read()
-          original_size = len(html)
+          print(f"Original size: {len(html)//1024}KB")
 
-          print("Reading React libs...")
           react    = open('/tmp/react_libs/node_modules/react/umd/react.production.min.js').read()
           reactdom = open('/tmp/react_libs/node_modules/react-dom/umd/react-dom.production.min.js').read()
           babel    = open('/tmp/react_libs/node_modules/@babel/standalone/babel.min.js').read()
-
-          print(f"React: {len(react)//1024}KB, ReactDOM: {len(reactdom)//1024}KB, Babel: {len(babel)//1024}KB")
 
           html = html.replace(
               '<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>',
@@ -54,25 +45,17 @@ jobs:
               '<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>',
               f'<script>{babel}</script>'
           )
+          html = re.sub(r'<script defer src="https://static\.cloudflareinsights\.com/.*?</script>', '', html, flags=re.DOTALL)
 
-          html = re.sub(
-              r'<script defer src="https://static\.cloudflareinsights\.com/.*?</script>',
-              '',
-              html,
-              flags=re.DOTALL
-          )
-
-          final_size = len(html)
-          print(f"Original: {original_size//1024}KB -> Final: {final_size//1024}KB")
           open('assets/index.html', 'w', encoding='utf-8').write(html)
-          print("Done!")
+          print(f"Final size: {len(html)//1024}KB - Done!")
           PYEOF
 
-      - name: Commit inlined HTML
+      - name: Commit and force push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git pull --rebase origin main || git pull --rebase origin master
           git add assets/index.html
-          git diff --staged --quiet || git commit -m "build: inline React+Babel scripts for offline WebView [skip ci]"
-          git push
+          git diff --staged --quiet && echo "No changes" && exit 0
+          git commit -m "build: inline React+Babel for offline WebView [skip ci]"
+          git push --force-with-lease origin main
