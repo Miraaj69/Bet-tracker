@@ -1,1 +1,79 @@
+name: Inline React Scripts into HTML
 
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install React + ReactDOM + Babel locally
+        run: |
+          npm install react@18.2.0 react-dom@18.2.0 @babel/standalone@7.24.0 --no-save --prefix /tmp/react_libs
+
+      - name: Inline scripts into index.html
+        run: |
+          python3 << 'PYEOF'
+          import re
+
+          print("Reading HTML...")
+          html = open('assets/index.html', 'r', encoding='utf-8').read()
+          original_size = len(html)
+
+          print("Reading React libs...")
+          react    = open('/tmp/react_libs/node_modules/react/umd/react.production.min.js').read()
+          reactdom = open('/tmp/react_libs/node_modules/react-dom/umd/react-dom.production.min.js').read()
+          babel    = open('/tmp/react_libs/node_modules/@babel/standalone/babel.min.js').read()
+
+          print(f"React: {len(react)//1024}KB, ReactDOM: {len(reactdom)//1024}KB, Babel: {len(babel)//1024}KB")
+
+          # Replace CDN scripts with inline versions
+          html = html.replace(
+              '<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>',
+              f'<script>{react}</script>'
+          )
+          html = html.replace(
+              '<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>',
+              f'<script>{reactdom}</script>'
+          )
+          html = html.replace(
+              '<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>',
+              f'<script>{babel}</script>'
+          )
+
+          # Remove Cloudflare analytics beacon (not needed in app)
+          html = re.sub(
+              r'<script defer src="https://static\.cloudflareinsights\.com/.*?</script>',
+              '',
+              html,
+              flags=re.DOTALL
+          )
+
+          final_size = len(html)
+          print(f"Original: {original_size//1024}KB -> Final: {final_size//1024}KB")
+
+          open('assets/index.html', 'w', encoding='utf-8').write(html)
+          print("Done!")
+          PYEOF
+
+      - name: Commit inlined HTML
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/index.html
+          git diff --staged --quiet || git commit -m "build: inline React+Babel scripts for offline WebView [skip ci]"
+          git push
+          
