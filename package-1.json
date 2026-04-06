@@ -1,0 +1,28 @@
+{
+  "name": "bet-tracker-pro",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BetTracker Pro — Personal Betting Tracker App",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "cap:sync": "npx cap sync",
+    "cap:android": "npx cap open android",
+    "cap:build": "npm run build && npx cap sync android",
+    "apk:debug": "npm run build && npx cap sync android && cd android && ./gradlew assembleDebug",
+    "apk:release": "npm run build && npx cap sync android && cd android && ./gradlew assembleRelease"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^5.4.10",
+    "vite-plugin-pwa": "^0.21.1",
+    "@capacitor/core": "^6.2.0",
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0"
+  }
+}

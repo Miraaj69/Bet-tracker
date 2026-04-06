@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="BetTracker Pro — Professional Betting Tracker" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="BetTracker" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <title>BetTracker Pro 🏆</title>
+
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      html, body, #root {
+        height: 100%;
+        width: 100%;
+        overflow-x: hidden;
+        background: #000;
+        -webkit-tap-highlight-color: transparent;
+        -webkit-font-smoothing: antialiased;
+      }
+      /* Safe area for notch phones */
+      body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      /* Splash loader */
+      #splash {
+        position: fixed;
+        inset: 0;
+        background: #000;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        transition: opacity 0.4s ease;
+      }
+      #splash.hide { opacity: 0; pointer-events: none; }
+      #splash-icon { font-size: 72px; animation: pulse 1.2s infinite; }
+      #splash-title { color: #fff; font-size: 22px; font-weight: 800; margin-top: 16px; font-family: -apple-system, sans-serif; letter-spacing: -0.5px; }
+      #splash-sub { color: rgba(255,255,255,0.4); font-size: 12px; margin-top: 6px; font-family: -apple-system, sans-serif; }
+      @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+    </style>
+  </head>
+  <body>
+    <!-- Splash Screen -->
+    <div id="splash">
+      <div id="splash-icon">🏆</div>
+      <div id="splash-title">BetTracker Pro</div>
+      <div id="splash-sub">Loading your stats...</div>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="module" src="/src/main.jsx"></script>
+
+    <script>
+      // Hide splash after app loads
+      window.addEventListener('load', () => {
+        setTimeout(() => {
+          const splash = document.getElementById('splash');
+          if (splash) {
+            splash.classList.add('hide');
+            setTimeout(() => splash.remove(), 400);
+          }
+        }, 800);
+      });
+    </script>
+  </body>
+</html>
