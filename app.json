@@ -1,0 +1,33 @@
+{
+  "expo": {
+    "name": "BetTracker Pro",
+    "slug": "bet-tracker-pro",
+    "version": "1.0.0",
+    "description": "Professional Betting Tracker — Cricket, Football & Tennis",
+    "platforms": ["android", "web"],
+    "orientation": "portrait",
+    "backgroundColor": "#000000",
+    "icon": "./public/icon-512.png",
+    "android": {
+      "package": "com.bettracker.pro",
+      "versionCode": 1,
+      "adaptiveIcon": {
+        "foregroundImage": "./public/icon-512.png",
+        "backgroundColor": "#000000"
+      },
+      "statusBar": {
+        "backgroundColor": "#000000",
+        "style": "light"
+      }
+    },
+    "web": {
+      "favicon": "./public/favicon-32.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "99cbdd7e-08ae-4e24-8848-95173dc787c7"
+      }
+    },
+    "plugins": []
+  }
+}
